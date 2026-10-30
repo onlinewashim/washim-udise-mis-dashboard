@@ -273,6 +273,7 @@ data=[...imported,district];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 render();
     renderRanking();
+  renderPendingAnalysis();
 document.getElementById("message").textContent="Excel uploaded successfully. Dashboard updated with "+imported.length+" taluka rows.";
 }
 
@@ -297,6 +298,7 @@ URL.revokeObjectURL(a.href);
 }
 render();
 renderRanking();
+renderPendingAnalysis();
 </script>
 </body>
 </html>
