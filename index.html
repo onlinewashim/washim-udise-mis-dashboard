@@ -76,7 +76,7 @@ const headers=[
 "Completion %","APAAR Status","Aadhaar Validation","MBU Pending",
 "Marked Dropout","Active For Import","Difference in Enrollment"
 ];
-
+const STORAGE_KEY = "washim_udise_dashboard_data";
 let data=[
 ["KARANJA LAD",259,40004,39850,77,101,39672,99.17,91.64,97.21,3193,139,943,154],
 ["MALEGAON",202,30271,29611,13,4,29594,97.764,89.86,96.56,5328,77,839,660],
@@ -86,7 +86,17 @@ let data=[
 ["WASHIM",288,59347,58298,313,301,57684,97.198,86.98,95.85,9245,98,1482,1049],
 ["DISTRICT",1361,230770,226144,838,931,224375,97.229,87.94,96.08,33301,874,6689,4626]
 ];
-
+try {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+            data = parsedData;
+        }
+    }
+} catch (error) {
+    console.error("Saved data could not be loaded:", error);
+}
 const number=n=>Number(n||0).toLocaleString("en-IN");
 const percent=n=>Number(n||0).toFixed(2)+"%";
 
@@ -169,6 +179,7 @@ const weighted=(col)=>imported.reduce((s,r)=>s+(Number(r[3])||0)*(Number(r[col])
 district[8]=weighted(8);
 district[9]=weighted(9);
 data=[...imported,district];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 render();
 document.getElementById("message").textContent="Excel uploaded successfully. Dashboard updated with "+imported.length+" taluka rows.";
 }
