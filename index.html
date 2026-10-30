@@ -59,6 +59,52 @@ tr.total{background:#dbeafe;font-weight:bold}
 <div id="chart"></div>
 </div>
 
+<h3 class="section-title">🏆 Taluka-wise Performance Ranking</h3>
+<div class="panel">
+  <div class="table-wrap">
+    <table id="rankingTable"></table>
+  </div>
+</div>
+
+<script>
+function renderRanking() {
+  const rows = data.filter(r =>
+    r[0].toUpperCase() !== "DISTRICT"
+  );
+
+  const sorted = [...rows].sort((a,b) => b[7] - a[7]);
+
+  let html = `
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Taluka</th>
+        <th>Completion %</th>
+        <th>APAAR %</th>
+        <th>Aadhaar %</th>
+        <th>MBU Pending</th>
+        <th>Dropout</th>
+      </tr>
+    </thead><tbody>`;
+
+  sorted.forEach((r,i) => {
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${r[0]}</td>
+        <td>${Number(r[7]).toFixed(2)}%</td>
+        <td>${Number(r[8]).toFixed(2)}%</td>
+        <td>${Number(r[9]).toFixed(2)}%</td>
+        <td>${Number(r[10]).toLocaleString("en-IN")}</td>
+        <td>${Number(r[11]).toLocaleString("en-IN")}</td>
+      </tr>`;
+  });
+
+  html += "</tbody>";
+  document.getElementById("rankingTable").innerHTML = html;
+}
+</script>
+
 <h3 class="section-title">Taluka-wise Detailed Report</h3>
 <div class="panel">
 <input id="search" placeholder="Search Taluka..." oninput="render()">
@@ -181,6 +227,7 @@ district[9]=weighted(9);
 data=[...imported,district];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 render();
+    renderRanking();
 document.getElementById("message").textContent="Excel uploaded successfully. Dashboard updated with "+imported.length+" taluka rows.";
 }
 
