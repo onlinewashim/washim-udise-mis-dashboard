@@ -144,7 +144,9 @@ function renderPendingAnalysis() {
         <td>${(100-Number(r[9])).toFixed(2)}%</td>
       </tr>`;
   });
-
+ html += "</tbody>";
+  document.getElementById("pendingTable").innerHTML = html;
+}
   html += "</tbody>";
   document.getElementById("pendingTable").innerHTML = html;
 }
