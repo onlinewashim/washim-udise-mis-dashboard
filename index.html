@@ -1,708 +1,198 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Washim District UDISE+ MIS Dashboard</title>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f1f5f9;
-    color:#1e293b;
-}
-
-header{
-    background:#123c69;
-    color:white;
-    padding:25px;
-    text-align:center;
-}
-
-header h1{
-    margin:0 0 8px;
-}
-
-header p{
-    margin:4px;
-}
-
-.container{
-    max-width:1500px;
-    margin:auto;
-    padding:20px;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-    gap:15px;
-}
-
-.card{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 2px 8px #00000015;
-}
-
-.card h3{
-    margin:0;
-    color:#64748b;
-    font-size:14px;
-}
-
-.card p{
-    margin:10px 0 0;
-    font-size:27px;
-    font-weight:bold;
-    color:#123c69;
-}
-
-.section{
-    background:white;
-    margin-top:20px;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 2px 8px #00000015;
-}
-
-.section h2{
-    margin-top:0;
-    color:#123c69;
-}
-
-.search{
-    width:100%;
-    padding:12px;
-    border:1px solid #cbd5e1;
-    border-radius:7px;
-    margin-bottom:15px;
-    font-size:15px;
-}
-
-.table-wrap{
-    overflow:auto;
-}
-
-table{
-    width:100%;
-    min-width:1800px;
-    border-collapse:collapse;
-}
-
-th,td{
-    padding:10px;
-    border:1px solid #dbe2ea;
-    text-align:center;
-    white-space:nowrap;
-}
-
-th{
-    background:#eaf1f8;
-    color:#123c69;
-    position:sticky;
-    top:0;
-}
-
-tr:nth-child(even){
-    background:#f8fafc;
-}
-
-.district{
-    background:#dbeafe !important;
-    font-weight:bold;
-}
-
-.bar-row{
-    margin:18px 0;
-}
-
-.bar-title{
-    font-weight:bold;
-    margin-bottom:5px;
-}
-
-.bar{
-    height:25px;
-    background:#dbeafe;
-    border-radius:5px;
-    overflow:hidden;
-}
-
-.bar-fill{
-    height:100%;
-    background:#2563eb;
-}
-
-footer{
-    text-align:center;
-    padding:25px;
-    color:#64748b;
-}
-
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172554}
+header{background:#123b70;color:white;padding:22px;text-align:center}
+header h1{margin:0 0 8px;font-size:25px}
+header p{margin:5px}
+.container{max-width:1500px;margin:auto;padding:18px}
+.panel,.kpi,.table-wrap{background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #00000012}
+.upload{border:2px dashed #2563eb;text-align:center;padding:22px}
+input,button{padding:11px;border-radius:7px;border:1px solid #cbd5e1;font-size:14px}
+button{background:#1455a0;color:white;border:0;cursor:pointer}
+button:hover{background:#0d3d77}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi small{color:#64748b;font-weight:bold}
+.kpi h2{margin:10px 0 0;color:#1455a0;font-size:25px}
+.section-title{margin:22px 0 12px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:1250px;font-size:13px}
+th,td{padding:10px;border:1px solid #e2e8f0;text-align:center;white-space:nowrap}
+th{background:#16477f;color:white;position:sticky;top:0}
+tr:nth-child(even){background:#f8fafc}
+tr.total{background:#dbeafe;font-weight:bold}
+.chart-row{display:grid;grid-template-columns:150px 1fr 75px;gap:10px;align-items:center;margin:12px 0}
+.bar-bg{height:17px;background:#e2e8f0;border-radius:20px;overflow:hidden}
+.bar{height:100%;background:#2383d5;border-radius:20px}
+.note{font-size:13px;color:#64748b}
+@media(max-width:600px){header h1{font-size:20px}.container{padding:10px}.chart-row{grid-template-columns:100px 1fr 55px;font-size:12px}}
 </style>
-
 </head>
-
 <body>
-
 <header>
-
 <h1>Washim District UDISE+ MIS Dashboard</h1>
-
 <p>Primary Education Department | Washim</p>
-
-<p>Daily Working Status — 30/10/2026 | 11:29 AM</p>
-
+<p id="reportDate">Daily Working Status | 30 October 2026</p>
 </header>
 
-
 <div class="container">
-
-
-<!-- KPI CARDS -->
-
-<div class="cards">
-
-<div class="card">
-<h3>Total Schools</h3>
-<p id="schools">0</p>
+<div class="panel upload">
+<h3>📂 Upload UDISE+ Excel Report</h3>
+<input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+<p class="note">Upload Excel file with Taluka-wise data. Dashboard will update automatically.</p>
+<button onclick="downloadCSV()">Download Current Data (CSV)</button>
+<p id="message" class="note">Showing sample data. Upload a new Excel file to update.</p>
 </div>
 
-<div class="card">
-<h3>Students Previous Year</h3>
-<p id="previous">0</p>
-</div>
+<h3 class="section-title">District Performance Overview</h3>
+<div class="grid" id="kpis"></div>
 
-<div class="card">
-<h3>Students 2026-27</h3>
-<p id="current">0</p>
-</div>
-
-<div class="card">
-<h3>Completed</h3>
-<p id="completed">0</p>
-</div>
-
-<div class="card">
-<h3>Completion %</h3>
-<p id="completion">0%</p>
-</div>
-
-<div class="card">
-<h3>APAAR Active</h3>
-<p id="apaar">0</p>
-</div>
-
-<div class="card">
-<h3>APAAR %</h3>
-<p id="apaarPercent">0%</p>
-</div>
-
-<div class="card">
-<h3>Aadhaar Validated</h3>
-<p id="aadhaar">0</p>
-</div>
-
-<div class="card">
-<h3>Aadhaar %</h3>
-<p id="aadhaarPercent">0%</p>
-</div>
-
-<div class="card">
-<h3>MBU Pending</h3>
-<p id="mbu">0</p>
-</div>
-
-<div class="card">
-<h3>Marked Dropout</h3>
-<p id="dropout">0</p>
-</div>
-
-<div class="card">
-<h3>Difference in Enrollment</h3>
-<p id="difference">0</p>
-</div>
-
-</div>
-
-
-<!-- CHART -->
-
-<div class="section">
-
-<h2>Taluka-wise Student 2026-27</h2>
-
+<h3 class="section-title">Taluka-wise Student Data Entry</h3>
+<div class="panel">
 <div id="chart"></div>
-
 </div>
 
-
-<!-- TABLE -->
-
-<div class="section">
-
-<h2>Complete Taluka-wise MIS Report</h2>
-
-<input
-class="search"
-type="text"
-id="search"
-placeholder="Search Taluka..."
-oninput="showTable()"
->
-
+<h3 class="section-title">Taluka-wise Detailed Report</h3>
+<div class="panel">
+<input id="search" placeholder="Search Taluka..." oninput="render()">
+</div>
 <div class="table-wrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Blocks</th>
-<th>Total Schools</th>
-<th>Total Students Previous Year</th>
-<th>Total Students 2026-27</th>
-<th>Not Started</th>
-<th>In-Progress</th>
-<th>Completed</th>
-<th>Completion %</th>
-<th>Total Repeaters</th>
-<th>APAAR Active</th>
-<th>APAAR %</th>
-<th>Aadhaar Passed</th>
-<th>Aadhaar %</th>
-<th>MBU Pending 5-15</th>
-<th>MBU Pending 15+</th>
-<th>Marked Dropout</th>
-<th>Active For Import</th>
-<th>% of Data Entry</th>
-<th>Difference in Enrollment</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableData"></tbody>
-
-</table>
-
+<table id="reportTable"></table>
 </div>
-
+<p class="note">Data source: UDISE+ 2026-27 | Washim District</p>
 </div>
-
-
-</div>
-
-
-<footer>
-
-Washim District MIS Dashboard | UDISE+ 2026-27
-
-</footer>
-
 
 <script>
-
-
-// REAL DATA PROVIDED BY USER
-// DATE: 30/10/2026
-// TIME: 11:29 AM
-
-
-const data = [
-
-{
-taluka:"KARANJA LAD",
-schools:259,
-previous:40004,
-current:39850,
-notStarted:77,
-progress:101,
-completed:39672,
-completion:99.17,
-repeaters:566,
-apaar:36519,
-apaarPercent:91.64,
-aadhaar:38740,
-aadhaarPercent:97.21,
-mbu5_15:1862,
-mbu15:1331,
-dropout:139,
-imported:943,
-entryPercent:99.55,
-difference:154
-},
-
-{
-taluka:"MALEGAON",
-schools:202,
-previous:30271,
-current:29611,
-notStarted:13,
-progress:4,
-completed:29594,
-completion:97.764,
-repeaters:455,
-apaar:26607,
-apaarPercent:89.86,
-aadhaar:28593,
-aadhaarPercent:96.56,
-mbu5_15:3482,
-mbu15:1846,
-dropout:77,
-imported:839,
-entryPercent:99.94,
-difference:660
-},
-
-{
-taluka:"MANGRULPIR",
-schools:208,
-previous:30524,
-current:30566,
-notStarted:329,
-progress:458,
-completed:29779,
-completion:97.559,
-repeaters:366,
-apaar:26800,
-apaarPercent:87.68,
-aadhaar:29497,
-aadhaarPercent:96.50,
-mbu5_15:2762,
-mbu15:1624,
-dropout:182,
-imported:985,
-entryPercent:97.43,
-difference:-42
-},
-
-{
-taluka:"MANORA",
-schools:200,
-previous:25123,
-current:24034,
-notStarted:5,
-progress:24,
-completed:24005,
-completion:95.55,
-repeaters:716,
-apaar:20375,
-apaarPercent:84.78,
-aadhaar:22770,
-aadhaarPercent:94.74,
-mbu5_15:2100,
-mbu15:1214,
-dropout:192,
-imported:1185,
-entryPercent:99.88,
-difference:1089
-},
-
-{
-taluka:"RISOD",
-schools:204,
-previous:45501,
-current:43785,
-notStarted:101,
-progress:43,
-completed:43641,
-completion:95.912,
-repeaters:837,
-apaar:37867,
-apaarPercent:86.48,
-aadhaar:41807,
-aadhaarPercent:95.48,
-mbu5_15:4218,
-mbu15:3617,
-dropout:186,
-imported:1255,
-entryPercent:99.67,
-difference:1716
-},
-
-{
-taluka:"WASHIM",
-schools:288,
-previous:59347,
-current:58298,
-notStarted:313,
-progress:301,
-completed:57684,
-completion:97.198,
-repeaters:899,
-apaar:50710,
-apaarPercent:86.98,
-aadhaar:55880,
-aadhaarPercent:95.85,
-mbu5_15:5340,
-mbu15:3905,
-dropout:98,
-imported:1482,
-entryPercent:98.95,
-difference:1049
-}
-
+const headers=[
+"Blocks","Total Schools","Total Students (Previous Year)",
+"Total Students (2026-27)","Not Started","In-Progress","Completed",
+"Completion %","APAAR Status","Aadhaar Validation","MBU Pending",
+"Marked Dropout","Active For Import","Difference in Enrollment"
 ];
 
+let data=[
+["KARANJA LAD",259,40004,39850,77,101,39672,99.17,91.64,97.21,3193,139,943,154],
+["MALEGAON",202,30271,29611,13,4,29594,97.764,89.86,96.56,5328,77,839,660],
+["MANGRULPIR",208,30524,30566,329,458,29779,97.559,87.68,96.50,4386,182,985,-42],
+["MANORA",200,25123,24034,5,24,24005,95.55,84.78,94.74,3314,192,1185,1089],
+["RISOD",204,45501,43785,101,43,43641,95.912,86.48,95.48,7835,186,1255,1716],
+["WASHIM",288,59347,58298,313,301,57684,97.198,86.98,95.85,9245,98,1482,1049],
+["DISTRICT",1361,230770,226144,838,931,224375,97.229,87.94,96.08,33301,874,6689,4626]
+];
 
-// DISTRICT TOTAL
+const number=n=>Number(n||0).toLocaleString("en-IN");
+const percent=n=>Number(n||0).toFixed(2)+"%";
 
-const district={
+function render(){
+const district=data.find(r=>r[0].toUpperCase()==="DISTRICT") || data[data.length-1];
+const cards=[
+["Total Schools",district[1]],
+["Previous Year Students",district[2]],
+["Students 2026-27",district[3]],
+["Not Started",district[4]],
+["In Progress",district[5]],
+["Completed",district[6]],
+["Completion",percent(district[7])],
+["APAAR Status",percent(district[8])],
+["Aadhaar Validation",percent(district[9])],
+["MBU Pending",district[10]],
+["Marked Dropout",district[11]],
+["Active For Import",district[12]],
+["Enrollment Difference",district[13]]
+];
+document.getElementById("kpis").innerHTML=cards.map(c=>
+`<div class="kpi"><small>${c[0]}</small><h2>${typeof c[1]==="string"&&c[1].includes("%")?c[1]:number(c[1])}</h2></div>`
+).join("");
 
-schools:1361,
-previous:230770,
-current:226144,
-notStarted:838,
-progress:931,
-completed:224375,
-completion:97.229,
-repeaters:3839,
-apaar:198878,
-apaarPercent:87.94,
-aadhaar:217287,
-aadhaarPercent:96.08,
-mbu5_15:19764,
-mbu15:13537,
-dropout:874,
-imported:6689,
-entryPercent:99.22,
-difference:4626
+const rows=data.filter(r=>r[0].toUpperCase()!=="DISTRICT");
+const max=Math.max(...rows.map(r=>Number(r[3])||0),1);
+document.getElementById("chart").innerHTML=rows.map(r=>
+`<div class="chart-row"><b>${r[0]}</b><div class="bar-bg"><div class="bar" style="width:${(r[3]/max*100)}%"></div></div><span>${number(r[3])}</span></div>`
+).join("");
 
-};
-
-
-// NUMBER FORMAT
-
-function number(n){
-
-return Number(n).toLocaleString("en-IN");
-
+const q=document.getElementById("search").value.toLowerCase();
+const filtered=data.filter(r=>r[0].toLowerCase().includes(q));
+document.getElementById("reportTable").innerHTML=
+"<thead><tr>"+headers.map(h=>`<th>${h}</th>`).join("")+"</tr></thead><tbody>"+
+filtered.map(r=>`<tr class="${r[0].toUpperCase()==="DISTRICT"?"total":""}">`+
+r.map((v,i)=>`<td>${i===0?v:(i>=7&&i<=9?percent(v):number(v))}</td>`).join("")+
+"</tr>").join("")+"</tbody>";
 }
 
+function normalize(s){
+return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+}
+function importRows(rows){
+if(!rows.length)throw new Error("Excel file is empty.");
+const rawHeaders=rows[0].map(normalize);
+const aliases=[
+["blocks","block","taluka","taluk"],
+["totalschools","school"],
+["totalstudentspreviousyear","previousyearstudents","previousstudents"],
+["totalstudents202627","totalstudents","students202627","currentstudents"],
+["notstarted"],
+["inprogress","progress"],
+["completed"],
+["completion","completionpercent"],
+["apaarstatus","apaar"],
+["aadhaarvalidation","adharvalidation","aadhaar"],
+["mbupending","mbu"],
+["markeddropout","dropout"],
+["activeforimport","activeimport"],
+["differenceinenrollment","difference"]
+];
+const indexes=aliases.map(group=>rawHeaders.findIndex(h=>group.includes(h)));
+if(indexes[0]===-1)throw new Error("Blocks column not found. Please check Excel headings.");
+const imported=rows.slice(1).filter(row=>row.some(v=>v!==null&&v!=="")).map(row=>
+indexes.map((idx,i)=>idx<0?(i===0?"":0):(i===0?String(row[idx]||"").trim():Number(String(row[idx]??0).replace(/,/g,""))||0))
+).filter(r=>r[0] && r[0].toUpperCase()!=="DISTRICT");
+if(!imported.length)throw new Error("No taluka rows found.");
+const totals=Array(13).fill(0);
+imported.forEach(r=>r.slice(1).forEach((v,i)=>totals[i]+=Number(v)||0));
+const schools=totals[0],prev=totals[1],current=totals[2],completed=totals[5];
+const district=[
+"DISTRICT",schools,prev,current,totals[3],totals[4],completed,
+current?completed/current*100:0,
+prev?0:0,
+0,
+totals[9],totals[10],totals[11],totals[12]
+];
+// Percentage totals are weighted using the current student count as a practical district estimate.
+const weighted=(col)=>imported.reduce((s,r)=>s+(Number(r[3])||0)*(Number(r[col])||0),0)/(current||1);
+district[8]=weighted(8);
+district[9]=weighted(9);
+data=[...imported,district];
+render();
+document.getElementById("message").textContent="Excel uploaded successfully. Dashboard updated with "+imported.length+" taluka rows.";
+}
 
-// KPI
-
-document.getElementById("schools").innerText=
-number(district.schools);
-
-document.getElementById("previous").innerText=
-number(district.previous);
-
-document.getElementById("current").innerText=
-number(district.current);
-
-document.getElementById("completed").innerText=
-number(district.completed);
-
-document.getElementById("completion").innerText=
-district.completion+"%";
-
-document.getElementById("apaar").innerText=
-number(district.apaar);
-
-document.getElementById("apaarPercent").innerText=
-district.apaarPercent+"%";
-
-document.getElementById("aadhaar").innerText=
-number(district.aadhaar);
-
-document.getElementById("aadhaarPercent").innerText=
-district.aadhaarPercent+"%";
-
-document.getElementById("mbu").innerText=
-number(district.mbu5_15);
-
-document.getElementById("dropout").innerText=
-number(district.dropout);
-
-document.getElementById("difference").innerText=
-number(district.difference);
-
-
-// TABLE
-
-function showTable(){
-
-const search=
-document.getElementById("search").value.toLowerCase();
-
-const filtered=
-data.filter(row=>
-row.taluka.toLowerCase().includes(search)
-);
-
-let html="";
-
-filtered.forEach(row=>{
-
-html+=`
-
-<tr>
-
-<td>${row.taluka}</td>
-
-<td>${number(row.schools)}</td>
-
-<td>${number(row.previous)}</td>
-
-<td>${number(row.current)}</td>
-
-<td>${number(row.notStarted)}</td>
-
-<td>${number(row.progress)}</td>
-
-<td>${number(row.completed)}</td>
-
-<td>${row.completion}%</td>
-
-<td>${number(row.repeaters)}</td>
-
-<td>${number(row.apaar)}</td>
-
-<td>${row.apaarPercent}%</td>
-
-<td>${number(row.aadhaar)}</td>
-
-<td>${row.aadhaarPercent}%</td>
-
-<td>${number(row.mbu5_15)}</td>
-
-<td>${number(row.mbu15)}</td>
-
-<td>${number(row.dropout)}</td>
-
-<td>${number(row.imported)}</td>
-
-<td>${row.entryPercent}%</td>
-
-<td>${number(row.difference)}</td>
-
-</tr>
-
-`;
-
+document.getElementById("excelFile").addEventListener("change",async e=>{
+const file=e.target.files[0];if(!file)return;
+try{
+const buffer=await file.arrayBuffer();
+const workbook=XLSX.read(buffer,{type:"array"});
+const sheet=workbook.Sheets[workbook.SheetNames[0]];
+importRows(XLSX.utils.sheet_to_json(sheet,{header:1,defval:0}));
+}catch(err){
+document.getElementById("message").textContent="Upload error: "+err.message;
+}
 });
 
-
-// DISTRICT ROW
-
-if(search===""){
-
-html+=`
-
-<tr class="district">
-
-<td>DISTRICT</td>
-
-<td>${number(district.schools)}</td>
-
-<td>${number(district.previous)}</td>
-
-<td>${number(district.current)}</td>
-
-<td>${number(district.notStarted)}</td>
-
-<td>${number(district.progress)}</td>
-
-<td>${number(district.completed)}</td>
-
-<td>${district.completion}%</td>
-
-<td>${number(district.repeaters)}</td>
-
-<td>${number(district.apaar)}</td>
-
-<td>${district.apaarPercent}%</td>
-
-<td>${number(district.aadhaar)}</td>
-
-<td>${district.aadhaarPercent}%</td>
-
-<td>${number(district.mbu5_15)}</td>
-
-<td>${number(district.mbu15)}</td>
-
-<td>${number(district.dropout)}</td>
-
-<td>${number(district.imported)}</td>
-
-<td>${district.entryPercent}%</td>
-
-<td>${number(district.difference)}</td>
-
-</tr>
-
-`;
-
+function downloadCSV(){
+const csv=[headers,...data].map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\n");
+const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+const a=document.createElement("a");
+a.href=URL.createObjectURL(blob);a.download="Washim_UDISE_MIS_Report.csv";a.click();
+URL.revokeObjectURL(a.href);
 }
-
-document.getElementById("tableData").innerHTML=html;
-
-}
-
-
-// CHART
-
-function showChart(){
-
-const max=
-Math.max(...data.map(row=>row.current));
-
-let html="";
-
-data.forEach(row=>{
-
-const width=
-(row.current/max)*100;
-
-html+=`
-
-<div class="bar-row">
-
-<div class="bar-title">
-
-${row.taluka} —
-${number(row.current)} Students
-
-</div>
-
-<div class="bar">
-
-<div
-class="bar-fill"
-style="width:${width}%">
-</div>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-document.getElementById("chart").innerHTML=html;
-
-}
-
-
-showTable();
-
-showChart();
-
-
+render();
 </script>
-
 </body>
 </html>
