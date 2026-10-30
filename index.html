@@ -105,6 +105,51 @@ function renderRanking() {
 }
 </script>
 
+<h3 class="section-title">⚠️ Taluka-wise Pending Work Analysis</h3>
+<div class="panel">
+  <div class="table-wrap">
+    <table id="pendingTable"></table>
+  </div>
+</div>
+
+<script>
+function renderPendingAnalysis() {
+  const rows = data.filter(r =>
+    r[0].toUpperCase() !== "DISTRICT"
+  );
+
+  const sorted = [...rows].sort((a,b) => b[10] - a[10]);
+
+  let html = `
+    <thead>
+      <tr>
+        <th>Taluka</th>
+        <th>MBU Pending</th>
+        <th>Not Started</th>
+        <th>In-Progress</th>
+        <th>APAAR Pending %</th>
+        <th>Aadhaar Pending %</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  sorted.forEach(r => {
+    html += `
+      <tr>
+        <td><b>${r[0]}</b></td>
+        <td>${Number(r[10]).toLocaleString("en-IN")}</td>
+        <td>${Number(r[4]).toLocaleString("en-IN")}</td>
+        <td>${Number(r[5]).toLocaleString("en-IN")}</td>
+        <td>${(100-Number(r[8])).toFixed(2)}%</td>
+        <td>${(100-Number(r[9])).toFixed(2)}%</td>
+      </tr>`;
+  });
+
+  html += "</tbody>";
+  document.getElementById("pendingTable").innerHTML = html;
+}
+</script>
+
 <h3 class="section-title">Taluka-wise Detailed Report</h3>
 <div class="panel">
 <input id="search" placeholder="Search Taluka..." oninput="render()">
