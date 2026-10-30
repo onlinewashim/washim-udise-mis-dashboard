@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Washim District UDISE+ MIS Dashboard</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f1f5f9;
+    color:#1e293b;
+}
+
+header{
+    background:#123c69;
+    color:white;
+    padding:25px;
+    text-align:center;
+}
+
+header h1{
+    margin:0 0 8px;
+}
+
+header p{
+    margin:4px;
+}
+
+.container{
+    max-width:1500px;
+    margin:auto;
+    padding:20px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px #00000015;
+}
+
+.card h3{
+    margin:0;
+    color:#64748b;
+    font-size:14px;
+}
+
+.card p{
+    margin:10px 0 0;
+    font-size:27px;
+    font-weight:bold;
+    color:#123c69;
+}
+
+.section{
+    background:white;
+    margin-top:20px;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px #00000015;
+}
+
+.section h2{
+    margin-top:0;
+    color:#123c69;
+}
+
+.search{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+    margin-bottom:15px;
+    font-size:15px;
+}
+
+.table-wrap{
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    min-width:1800px;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:10px;
+    border:1px solid #dbe2ea;
+    text-align:center;
+    white-space:nowrap;
+}
+
+th{
+    background:#eaf1f8;
+    color:#123c69;
+    position:sticky;
+    top:0;
+}
+
+tr:nth-child(even){
+    background:#f8fafc;
+}
+
+.district{
+    background:#dbeafe !important;
+    font-weight:bold;
+}
+
+.bar-row{
+    margin:18px 0;
+}
+
+.bar-title{
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.bar{
+    height:25px;
+    background:#dbeafe;
+    border-radius:5px;
+    overflow:hidden;
+}
+
+.bar-fill{
+    height:100%;
+    background:#2563eb;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    color:#64748b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Washim District UDISE+ MIS Dashboard</h1>
+
+<p>Primary Education Department | Washim</p>
+
+<p>Daily Working Status — 30/10/2026 | 11:29 AM</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- KPI CARDS -->
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Schools</h3>
+<p id="schools">0</p>
+</div>
+
+<div class="card">
+<h3>Students Previous Year</h3>
+<p id="previous">0</p>
+</div>
+
+<div class="card">
+<h3>Students 2026-27</h3>
+<p id="current">0</p>
+</div>
+
+<div class="card">
+<h3>Completed</h3>
+<p id="completed">0</p>
+</div>
+
+<div class="card">
+<h3>Completion %</h3>
+<p id="completion">0%</p>
+</div>
+
+<div class="card">
+<h3>APAAR Active</h3>
+<p id="apaar">0</p>
+</div>
+
+<div class="card">
+<h3>APAAR %</h3>
+<p id="apaarPercent">0%</p>
+</div>
+
+<div class="card">
+<h3>Aadhaar Validated</h3>
+<p id="aadhaar">0</p>
+</div>
+
+<div class="card">
+<h3>Aadhaar %</h3>
+<p id="aadhaarPercent">0%</p>
+</div>
+
+<div class="card">
+<h3>MBU Pending</h3>
+<p id="mbu">0</p>
+</div>
+
+<div class="card">
+<h3>Marked Dropout</h3>
+<p id="dropout">0</p>
+</div>
+
+<div class="card">
+<h3>Difference in Enrollment</h3>
+<p id="difference">0</p>
+</div>
+
+</div>
+
+
+<!-- CHART -->
+
+<div class="section">
+
+<h2>Taluka-wise Student 2026-27</h2>
+
+<div id="chart"></div>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="section">
+
+<h2>Complete Taluka-wise MIS Report</h2>
+
+<input
+class="search"
+type="text"
+id="search"
+placeholder="Search Taluka..."
+oninput="showTable()"
+>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Blocks</th>
+<th>Total Schools</th>
+<th>Total Students Previous Year</th>
+<th>Total Students 2026-27</th>
+<th>Not Started</th>
+<th>In-Progress</th>
+<th>Completed</th>
+<th>Completion %</th>
+<th>Total Repeaters</th>
+<th>APAAR Active</th>
+<th>APAAR %</th>
+<th>Aadhaar Passed</th>
+<th>Aadhaar %</th>
+<th>MBU Pending 5-15</th>
+<th>MBU Pending 15+</th>
+<th>Marked Dropout</th>
+<th>Active For Import</th>
+<th>% of Data Entry</th>
+<th>Difference in Enrollment</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableData"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Washim District MIS Dashboard | UDISE+ 2026-27
+
+</footer>
+
+
+<script>
+
+
+// REAL DATA PROVIDED BY USER
+// DATE: 30/10/2026
+// TIME: 11:29 AM
+
+
+const data = [
+
+{
+taluka:"KARANJA LAD",
+schools:259,
+previous:40004,
+current:39850,
+notStarted:77,
+progress:101,
+completed:39672,
+completion:99.17,
+repeaters:566,
+apaar:36519,
+apaarPercent:91.64,
+aadhaar:38740,
+aadhaarPercent:97.21,
+mbu5_15:1862,
+mbu15:1331,
+dropout:139,
+imported:943,
+entryPercent:99.55,
+difference:154
+},
+
+{
+taluka:"MALEGAON",
+schools:202,
+previous:30271,
+current:29611,
+notStarted:13,
+progress:4,
+completed:29594,
+completion:97.764,
+repeaters:455,
+apaar:26607,
+apaarPercent:89.86,
+aadhaar:28593,
+aadhaarPercent:96.56,
+mbu5_15:3482,
+mbu15:1846,
+dropout:77,
+imported:839,
+entryPercent:99.94,
+difference:660
+},
+
+{
+taluka:"MANGRULPIR",
+schools:208,
+previous:30524,
+current:30566,
+notStarted:329,
+progress:458,
+completed:29779,
+completion:97.559,
+repeaters:366,
+apaar:26800,
+apaarPercent:87.68,
+aadhaar:29497,
+aadhaarPercent:96.50,
+mbu5_15:2762,
+mbu15:1624,
+dropout:182,
+imported:985,
+entryPercent:97.43,
+difference:-42
+},
+
+{
+taluka:"MANORA",
+schools:200,
+previous:25123,
+current:24034,
+notStarted:5,
+progress:24,
+completed:24005,
+completion:95.55,
+repeaters:716,
+apaar:20375,
+apaarPercent:84.78,
+aadhaar:22770,
+aadhaarPercent:94.74,
+mbu5_15:2100,
+mbu15:1214,
+dropout:192,
+imported:1185,
+entryPercent:99.88,
+difference:1089
+},
+
+{
+taluka:"RISOD",
+schools:204,
+previous:45501,
+current:43785,
+notStarted:101,
+progress:43,
+completed:43641,
+completion:95.912,
+repeaters:837,
+apaar:37867,
+apaarPercent:86.48,
+aadhaar:41807,
+aadhaarPercent:95.48,
+mbu5_15:4218,
+mbu15:3617,
+dropout:186,
+imported:1255,
+entryPercent:99.67,
+difference:1716
+},
+
+{
+taluka:"WASHIM",
+schools:288,
+previous:59347,
+current:58298,
+notStarted:313,
+progress:301,
+completed:57684,
+completion:97.198,
+repeaters:899,
+apaar:50710,
+apaarPercent:86.98,
+aadhaar:55880,
+aadhaarPercent:95.85,
+mbu5_15:5340,
+mbu15:3905,
+dropout:98,
+imported:1482,
+entryPercent:98.95,
+difference:1049
+}
+
+];
+
+
+// DISTRICT TOTAL
+
+const district={
+
+schools:1361,
+previous:230770,
+current:226144,
+notStarted:838,
+progress:931,
+completed:224375,
+completion:97.229,
+repeaters:3839,
+apaar:198878,
+apaarPercent:87.94,
+aadhaar:217287,
+aadhaarPercent:96.08,
+mbu5_15:19764,
+mbu15:13537,
+dropout:874,
+imported:6689,
+entryPercent:99.22,
+difference:4626
+
+};
+
+
+// NUMBER FORMAT
+
+function number(n){
+
+return Number(n).toLocaleString("en-IN");
+
+}
+
+
+// KPI
+
+document.getElementById("schools").innerText=
+number(district.schools);
+
+document.getElementById("previous").innerText=
+number(district.previous);
+
+document.getElementById("current").innerText=
+number(district.current);
+
+document.getElementById("completed").innerText=
+number(district.completed);
+
+document.getElementById("completion").innerText=
+district.completion+"%";
+
+document.getElementById("apaar").innerText=
+number(district.apaar);
+
+document.getElementById("apaarPercent").innerText=
+district.apaarPercent+"%";
+
+document.getElementById("aadhaar").innerText=
+number(district.aadhaar);
+
+document.getElementById("aadhaarPercent").innerText=
+district.aadhaarPercent+"%";
+
+document.getElementById("mbu").innerText=
+number(district.mbu5_15);
+
+document.getElementById("dropout").innerText=
+number(district.dropout);
+
+document.getElementById("difference").innerText=
+number(district.difference);
+
+
+// TABLE
+
+function showTable(){
+
+const search=
+document.getElementById("search").value.toLowerCase();
+
+const filtered=
+data.filter(row=>
+row.taluka.toLowerCase().includes(search)
+);
+
+let html="";
+
+filtered.forEach(row=>{
+
+html+=`
+
+<tr>
+
+<td>${row.taluka}</td>
+
+<td>${number(row.schools)}</td>
+
+<td>${number(row.previous)}</td>
+
+<td>${number(row.current)}</td>
+
+<td>${number(row.notStarted)}</td>
+
+<td>${number(row.progress)}</td>
+
+<td>${number(row.completed)}</td>
+
+<td>${row.completion}%</td>
+
+<td>${number(row.repeaters)}</td>
+
+<td>${number(row.apaar)}</td>
+
+<td>${row.apaarPercent}%</td>
+
+<td>${number(row.aadhaar)}</td>
+
+<td>${row.aadhaarPercent}%</td>
+
+<td>${number(row.mbu5_15)}</td>
+
+<td>${number(row.mbu15)}</td>
+
+<td>${number(row.dropout)}</td>
+
+<td>${number(row.imported)}</td>
+
+<td>${row.entryPercent}%</td>
+
+<td>${number(row.difference)}</td>
+
+</tr>
+
+`;
+
+});
+
+
+// DISTRICT ROW
+
+if(search===""){
+
+html+=`
+
+<tr class="district">
+
+<td>DISTRICT</td>
+
+<td>${number(district.schools)}</td>
+
+<td>${number(district.previous)}</td>
+
+<td>${number(district.current)}</td>
+
+<td>${number(district.notStarted)}</td>
+
+<td>${number(district.progress)}</td>
+
+<td>${number(district.completed)}</td>
+
+<td>${district.completion}%</td>
+
+<td>${number(district.repeaters)}</td>
+
+<td>${number(district.apaar)}</td>
+
+<td>${district.apaarPercent}%</td>
+
+<td>${number(district.aadhaar)}</td>
+
+<td>${district.aadhaarPercent}%</td>
+
+<td>${number(district.mbu5_15)}</td>
+
+<td>${number(district.mbu15)}</td>
+
+<td>${number(district.dropout)}</td>
+
+<td>${number(district.imported)}</td>
+
+<td>${district.entryPercent}%</td>
+
+<td>${number(district.difference)}</td>
+
+</tr>
+
+`;
+
+}
+
+document.getElementById("tableData").innerHTML=html;
+
+}
+
+
+// CHART
+
+function showChart(){
+
+const max=
+Math.max(...data.map(row=>row.current));
+
+let html="";
+
+data.forEach(row=>{
+
+const width=
+(row.current/max)*100;
+
+html+=`
+
+<div class="bar-row">
+
+<div class="bar-title">
+
+${row.taluka} —
+${number(row.current)} Students
+
+</div>
+
+<div class="bar">
+
+<div
+class="bar-fill"
+style="width:${width}%">
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("chart").innerHTML=html;
+
+}
+
+
+showTable();
+
+showChart();
+
+
+</script>
+
+</body>
+</html>
