@@ -487,6 +487,53 @@ function saveMonthlySnapshot() {
     "Monthly report saved successfully for " + month;
 
   renderMonthlyComparison();
+  function drawMonthlyGraph(elementId, months, values) {
+  const container = document.getElementById(elementId);
+  if (!container) return;
+
+  if (months.length === 0) {
+    container.innerHTML = "<p>No monthly data available.</p>";
+    return;
+  }
+
+  container.innerHTML = months.map((month, i) => {
+    const value = Number(values[i]) || 0;
+    return `
+      <div class="chart-row">
+        <b>${month}</b>
+        <div class="bar-bg">
+          <div class="bar" style="width:${Math.min(value, 100)}%"></div>
+        </div>
+        <span>${value.toFixed(2)}%</span>
+      </div>`;
+  }).join("");
+}
+
+function renderMonthlyGraphs() {
+  const history = getMonthlyHistory();
+  const months = Object.keys(history).sort();
+  const validMonths = [];
+  const completion = [];
+  const apaar = [];
+  const aadhaar = [];
+
+  months.forEach(month => {
+    const district = history[month].find(
+      r => String(r[0]).toUpperCase() === "DISTRICT"
+    );
+
+    if (district) {
+      validMonths.push(month);
+      completion.push(Number(district[7]) || 0);
+      apaar.push(Number(district[8]) || 0);
+      aadhaar.push(Number(district[9]) || 0);
+    }
+  });
+
+  drawMonthlyGraph("monthlyCompletionGraph", validMonths, completion);
+  drawMonthlyGraph("monthlyApaarGraph", validMonths, apaar);
+  drawMonthlyGraph("monthlyAadhaarGraph", validMonths, aadhaar);
+}
   renderMonthlyGraphs();
   renderTalukaMonthlyOptions();
 }
