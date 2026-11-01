@@ -53,7 +53,50 @@ tr.total{background:#dbeafe;font-weight:bold}
 
 <h3 class="section-title">District Performance Overview</h3>
 <div class="grid" id="kpis"></div>
+<h3 class="section-title">📊 Taluka-wise Performance Charts</h3>
 
+<div class="panel">
+  <h4>Completion %</h4>
+  <div id="completionChart"></div>
+
+  <h4>APAAR %</h4>
+  <div id="apaarChart"></div>
+
+  <h4>Aadhaar Validation %</h4>
+  <div id="aadhaarChart"></div>
+</div>
+
+<script>
+function makePerformanceChart(elementId, rows, valueIndex) {
+  const container = document.getElementById(elementId);
+
+  if (!container) return;
+
+  container.innerHTML = rows.map(r => {
+    const value = Number(r[valueIndex]) || 0;
+
+    return `
+      <div class="chart-row">
+        <b>${r[0]}</b>
+        <div class="bar-bg">
+          <div class="bar" style="width:${Math.min(value,100)}%"></div>
+        </div>
+        <span>${value.toFixed(2)}%</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderPerformanceCharts() {
+  const rows = data.filter(r =>
+    String(r[0]).toUpperCase() !== "DISTRICT"
+  );
+
+  makePerformanceChart("completionChart", rows, 7);
+  makePerformanceChart("apaarChart", rows, 8);
+  makePerformanceChart("aadhaarChart", rows, 9);
+}
+</script>
 <h3 class="section-title">Taluka-wise Student Data Entry</h3>
 <div class="panel">
 <div id="chart"></div>
@@ -274,8 +317,9 @@ district[9]=weighted(9);
 data=[...imported,district];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 render();
-    renderRanking();
-  renderPendingAnalysis();
+renderRanking();
+renderPendingAnalysis();
+renderPerformanceCharts();
 document.getElementById("message").textContent="Excel uploaded successfully. Dashboard updated with "+imported.length+" taluka rows.";
 }
 
@@ -301,6 +345,7 @@ URL.revokeObjectURL(a.href);
 render();
 renderRanking();
 renderPendingAnalysis();
+renderPerformanceCharts();
 </script>
 </body>
 </html>
