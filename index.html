@@ -250,7 +250,7 @@ function renderPendingAnalysis() {
 
 <div class="panel">
   <label for="talukaMonthlySelect"><b>Select Taluka:</b></label>
-  <select id="talukaMonthlySelect" onchange="renderTalukaMonthlyProgress()">
+  <select id="talukaMonthlySelect" onchange="renderTalukaMonthlyProgress(); renderPerformanceChartsFromMonthly();">
     <option value="">Select Taluka</option>
   </select>
 
@@ -765,6 +765,29 @@ renderComparison();
   renderMonthlyGraphs();
   document.getElementById("completionChart").innerHTML =
   "JAVASCRIPT TEST SUCCESSFUL";
+  function renderPerformanceChartsFromMonthly() {
+  const monthlySelect = document.getElementById("talukaMonthlySelect");
+  const performanceSelect = document.getElementById("performanceTalukaSelect");
+
+  if (!monthlySelect || !performanceSelect) return;
+
+  // Monthly dropdown ka selected Taluka performance graph dropdown me set karein
+  performanceSelect.value = monthlySelect.value;
+
+  const allRows = data.filter(r =>
+    String(r[0]).toUpperCase() !== "DISTRICT"
+  );
+
+  const taluka = monthlySelect.value;
+
+  const rows = taluka
+    ? allRows.filter(r => String(r[0]) === taluka)
+    : allRows;
+
+  // Sirf APAAR aur Aadhaar graphs update honge
+  makePerformanceChart("apaarChart", rows, 8);
+  makePerformanceChart("aadhaarChart", rows, 9);
+}
 </script>
 </body>
 </html>
