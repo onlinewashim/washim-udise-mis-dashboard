@@ -189,11 +189,13 @@ function renderPendingAnalysis() {
 
 <div class="panel">
   <h4>APAAR Progress</h4>
+  <h4 id="monthlyApaarTitle">APAAR Status - District</h4>
   <div id="monthlyApaarGraph"></div>
 </div>
 
 <div class="panel">
   <h4>Aadhaar Validation Progress</h4>
+  <h4 id="monthlyAadhaarTitle">Aadhaar Validation - District</h4>
   <div id="monthlyAadhaarGraph"></div>
 </div>
   
@@ -619,6 +621,13 @@ function renderTalukaMonthlyProgress() {
   if (!select || !table) return;
 
   const taluka = select.value;
+  const title = taluka || "District";
+
+document.getElementById("monthlyApaarTitle").textContent =
+  "APAAR Status - " + title;
+
+document.getElementById("monthlyAadhaarTitle").textContent =
+  "Aadhaar Validation - " + title;
   const history = getMonthlyHistory();
   const months = Object.keys(history).sort();
 
