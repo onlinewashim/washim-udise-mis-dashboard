@@ -54,7 +54,12 @@ tr.total{background:#dbeafe;font-weight:bold}
 <h3 class="section-title">District Performance Overview</h3>
 <div class="grid" id="kpis"></div>
 <h3 class="section-title">📊 Taluka-wise Performance Charts</h3>
-
+<div class="panel">
+  <label for="performanceTalukaSelect"><b>Select Taluka:</b></label>
+  <select id="performanceTalukaSelect" onchange="renderPerformanceCharts()">
+    <option value="">All Talukas</option>
+  </select>
+</div>
 <div class="panel">
   <h4>Completion %</h4>
   <div id="completionChart">
