@@ -534,9 +534,7 @@ function renderMonthlyGraphs() {
   drawMonthlyGraph("monthlyApaarGraph", validMonths, apaar);
   drawMonthlyGraph("monthlyAadhaarGraph", validMonths, aadhaar);
 }
-  }
-
-function renderMonthlyComparison() {
+  function renderMonthlyComparison() {
   const history = getMonthlyHistory();
 
   const months = Object.keys(history).sort();
