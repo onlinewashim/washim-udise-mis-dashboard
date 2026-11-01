@@ -53,55 +53,6 @@ tr.total{background:#dbeafe;font-weight:bold}
 
 <h3 class="section-title">District Performance Overview</h3>
 <div class="grid" id="kpis"></div>
-<h3 class="section-title">📊 Taluka-wise Performance Charts</h3>
-<div class="panel">
-  <label for="performanceTalukaSelect"><b>Select Taluka:</b></label>
-  <select id="performanceTalukaSelect" onchange="renderPerformanceCharts()">
-    <option value="">All Talukas</option>
-  </select>
-</div>
-<div class="panel">
-  <h4>Completion %</h4>
- <div id="completionChart"></div>
-  <h4>APAAR %</h4>
-  <div id="apaarChart"></div>
-
-  <h4>Aadhaar Validation %</h4>
-  <div id="aadhaarChart"></div>
-</div>
-
-<script>
-  <script>
-function renderPerformanceCharts() {
-  const select = document.getElementById("performanceTalukaSelect");
-  if (!select || !data || !data.length) return;
-
-  const allRows = data.filter(r =>
-    String(r[0]).toUpperCase() !== "DISTRICT"
-  );
-
-  // Dropdown options sirf ek baar fill honge
-  if (select.options.length <= 1) {
-    allRows.forEach(r => {
-      const option = document.createElement("option");
-      option.value = r[0];
-      option.textContent = r[0];
-      select.appendChild(option);
-    });
-  }
-
-  const taluka = select.value;
-
-  const rows = taluka
-    ? allRows.filter(r => String(r[0]) === taluka)
-    : allRows;
-
-  // Sirf APAAR aur Aadhaar graph update honge
-  makePerformanceChart("apaarChart", rows, 8);
-  makePerformanceChart("aadhaarChart", rows, 9);
-}
-</script>
-</script>
 <h3 class="section-title">🏆 District Taluka Comparison</h3>
 
 <div class="grid" id="comparisonCards"></div>
@@ -765,29 +716,41 @@ renderComparison();
   renderMonthlyGraphs();
   document.getElementById("completionChart").innerHTML =
   "JAVASCRIPT TEST SUCCESSFUL";
-  function renderPerformanceChartsFromMonthly() {
-  const monthlySelect = document.getElementById("talukaMonthlySelect");
-  const performanceSelect = document.getElementById("performanceTalukaSelect");
+  
+function renderPerformanceChartsFromMonthly() {
+  const select = document.getElementById("talukaMonthlySelect");
+  if (!select) return;
 
-  if (!monthlySelect || !performanceSelect) return;
+  const taluka = select.value;
+  const history = getMonthlyHistory();
+  const months = Object.keys(history).sort();
 
-  // Monthly dropdown ka selected Taluka performance graph dropdown me set karein
-  performanceSelect.value = monthlySelect.value;
+  const validMonths = [];
+  const apaar = [];
+  const aadhaar = [];
 
-  const allRows = data.filter(r =>
-    String(r[0]).toUpperCase() !== "DISTRICT"
-  );
+  months.forEach(month => {
+    const rows = history[month];
 
-  const taluka = monthlySelect.value;
+    const row = taluka
+      ? rows.find(r =>
+          String(r[0]).toUpperCase() === taluka.toUpperCase()
+        )
+      : rows.find(r =>
+          String(r[0]).toUpperCase() === "DISTRICT"
+        );
 
-  const rows = taluka
-    ? allRows.filter(r => String(r[0]) === taluka)
-    : allRows;
+    if (row) {
+      validMonths.push(month);
+      apaar.push(Number(row[8]) || 0);
+      aadhaar.push(Number(row[9]) || 0);
+    }
+  });
 
-  // Sirf APAAR aur Aadhaar graphs update honge
-  makePerformanceChart("apaarChart", rows, 8);
-  makePerformanceChart("aadhaarChart", rows, 9);
+  drawMonthlyGraph("monthlyApaarGraph", validMonths, apaar);
+  drawMonthlyGraph("monthlyAadhaarGraph", validMonths, aadhaar);
 }
+
 </script>
 </body>
 </html>
