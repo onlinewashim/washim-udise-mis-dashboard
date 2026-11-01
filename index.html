@@ -307,7 +307,7 @@ render();
 renderRanking();
 renderPendingAnalysis();
 renderPerformanceCharts();
-
+renderComparison();
 document.getElementById("message").textContent="Excel uploaded successfully. Dashboard updated with "+imported.length+" taluka rows.";
 }
 
@@ -329,6 +329,65 @@ const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
 const a=document.createElement("a");
 a.href=URL.createObjectURL(blob);a.download="Washim_UDISE_MIS_Report.csv";a.click();
 URL.revokeObjectURL(a.href);
+}
+  function renderComparison() {
+
+  const rows = data.filter(r =>
+    String(r[0]).toUpperCase() !== "DISTRICT"
+  );
+
+  if (!rows.length) return;
+
+  // Best and lowest performance
+  const bestCompletion = [...rows].sort((a,b) => b[7]-a[7])[0];
+  const lowestApaar = [...rows].sort((a,b) => a[8]-b[8])[0];
+  const lowestAadhaar = [...rows].sort((a,b) => a[9]-b[9])[0];
+
+  // Comparison Cards
+  document.getElementById("comparisonCards").innerHTML = `
+    <div class="kpi">
+      <small>🏆 Best Completion</small>
+      <h2>${bestCompletion[0]}</h2>
+      <p>${Number(bestCompletion[7]).toFixed(2)}%</p>
+    </div>
+
+    <div class="kpi">
+      <small>⚠️ Lowest APAAR</small>
+      <h2>${lowestApaar[0]}</h2>
+      <p>${Number(lowestApaar[8]).toFixed(2)}%</p>
+    </div>
+
+    <div class="kpi">
+      <small>⚠️ Lowest Aadhaar</small>
+      <h2>${lowestAadhaar[0]}</h2>
+      <p>${Number(lowestAadhaar[9]).toFixed(2)}%</p>
+    </div>
+  `;
+
+  // Taluka Comparison Chart
+  const sorted = [...rows].sort((a,b) => b[7]-a[7]);
+
+  document.getElementById("comparisonChart").innerHTML =
+    sorted.map(r => `
+      <div class="panel">
+        <b>${r[0]}</b>
+
+        <p>Completion: ${Number(r[7]).toFixed(2)}%</p>
+        <div class="bar-bg">
+          <div class="bar" style="width:${Math.min(Number(r[7]),100)}%"></div>
+        </div>
+
+        <p>APAAR: ${Number(r[8]).toFixed(2)}%</p>
+        <div class="bar-bg">
+          <div class="bar" style="width:${Math.min(Number(r[8]),100)}%"></div>
+        </div>
+
+        <p>Aadhaar: ${Number(r[9]).toFixed(2)}%</p>
+        <div class="bar-bg">
+          <div class="bar" style="width:${Math.min(Number(r[9]),100)}%"></div>
+        </div>
+      </div>
+    `).join("");
 }
   function makePerformanceChart(elementId, rows, valueIndex) {
   const container = document.getElementById(elementId);
@@ -353,7 +412,7 @@ render();
 renderRanking();
 renderPendingAnalysis();
 renderPerformanceCharts();
-
+renderComparison();
 document.getElementById("completionChart").innerHTML =
   "JAVASCRIPT TEST SUCCESSFUL";
 </script>
