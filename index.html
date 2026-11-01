@@ -68,26 +68,6 @@ tr.total{background:#dbeafe;font-weight:bold}
 </div>
 
 <script>
-function makePerformanceChart(elementId, rows, valueIndex) {
-  const container = document.getElementById(elementId);
-
-  if (!container) return;
-
-  container.innerHTML = rows.map(r => {
-    const value = Number(r[valueIndex]) || 0;
-
-    return `
-      <div class="chart-row">
-        <b>${r[0]}</b>
-        <div class="bar-bg">
-          <div class="bar" style="width:${Math.min(value,100)}%"></div>
-        </div>
-        <span>${value.toFixed(2)}%</span>
-      </div>
-    `;
-  }).join("");
-}
-
 function renderPerformanceCharts() {
   const rows = data.filter(r =>
     String(r[0]).toUpperCase() !== "DISTRICT"
@@ -362,15 +342,6 @@ URL.revokeObjectURL(a.href);
   }).join("");
 }
 
-function renderPerformanceCharts() {
-  const rows = data.filter(r =>
-    String(r[0]).toUpperCase() !== "DISTRICT"
-  );
-
-  makePerformanceChart("completionChart", rows, 7);
-  makePerformanceChart("apaarChart", rows, 8);
-  makePerformanceChart("aadhaarChart", rows, 9);
-}
 render();
 renderRanking();
 renderPendingAnalysis();
