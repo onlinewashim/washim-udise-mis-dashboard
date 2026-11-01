@@ -483,11 +483,15 @@ function saveMonthlySnapshot() {
     JSON.stringify(history)
   );
 
-  document.getElementById("monthlyMessage").textContent =
+    document.getElementById("monthlyMessage").textContent =
     "Monthly report saved successfully for " + month;
 
   renderMonthlyComparison();
-  function drawMonthlyGraph(elementId, months, values) {
+  renderMonthlyGraphs();
+  renderTalukaMonthlyOptions();
+}
+
+function drawMonthlyGraph(elementId, months, values) {
   const container = document.getElementById(elementId);
   if (!container) return;
 
