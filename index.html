@@ -221,6 +221,20 @@ function renderPendingAnalysis() {
   <h4>Aadhaar Validation Progress</h4>
   <div id="monthlyAadhaarGraph"></div>
 </div>
+  
+<h3 class="section-title">🏫 Taluka-wise Monthly Progress</h3>
+
+<div class="panel">
+  <label for="talukaMonthlySelect"><b>Select Taluka:</b></label>
+  <select id="talukaMonthlySelect" onchange="renderTalukaMonthlyProgress()">
+    <option value="">Select Taluka</option>
+  </select>
+
+  <div class="table-wrap" style="margin-top:15px">
+    <table id="talukaMonthlyTable"></table>
+  </div>
+</div>
+
 <h3 class="section-title">Taluka-wise Detailed Report</h3>
 <div class="panel">
 <input id="search" placeholder="Search Taluka..." oninput="render()">
@@ -474,6 +488,7 @@ function saveMonthlySnapshot() {
 
   renderMonthlyComparison();
   renderMonthlyGraphs();
+  renderTalukaMonthlyOptions();
 }
 
 function renderMonthlyComparison() {
@@ -545,6 +560,111 @@ function renderMonthlyComparison() {
 
   document.getElementById("monthlyTable").innerHTML = html;
 }
+  
+function renderTalukaMonthlyOptions() {
+  const select = document.getElementById("talukaMonthlySelect");
+  if (!select) return;
+
+  const history = getMonthlyHistory();
+  const months = Object.keys(history).sort();
+
+  const selected = select.value;
+
+  const latestRows = months.length
+    ? history[months[months.length - 1]]
+    : [];
+
+  const talukas = latestRows.filter(r =>
+    String(r[0]).toUpperCase() !== "DISTRICT"
+  );
+
+  select.innerHTML =
+    '<option value="">Select Taluka</option>' +
+    talukas.map(r =>
+      `<option value="${r[0]}">${r[0]}</option>`
+    ).join("");
+
+  if (talukas.some(r => r[0] === selected)) {
+    select.value = selected;
+  }
+
+  renderTalukaMonthlyProgress();
+}
+
+function renderTalukaMonthlyProgress() {
+  const select = document.getElementById("talukaMonthlySelect");
+  const table = document.getElementById("talukaMonthlyTable");
+
+  if (!select || !table) return;
+
+  const taluka = select.value;
+  const history = getMonthlyHistory();
+  const months = Object.keys(history).sort();
+
+  if (!taluka) {
+    table.innerHTML =
+      "<tbody><tr><td>Select a Taluka to view monthly progress.</td></tr></tbody>";
+    return;
+  }
+
+  let html = `
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Total Students</th>
+        <th>Completion %</th>
+        <th>Change</th>
+        <th>APAAR %</th>
+        <th>Change</th>
+        <th>Aadhaar %</th>
+        <th>Change</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  let previous = null;
+  let found = false;
+
+  months.forEach(month => {
+    const row = history[month].find(r =>
+      String(r[0]).toUpperCase() === taluka.toUpperCase()
+    );
+
+    if (!row) return;
+
+    found = true;
+
+    const change = (current, old) =>
+      old === null
+        ? "—"
+        : (Number(current) - Number(old) >= 0 ? "+" : "") +
+          (Number(current) - Number(old)).toFixed(2) + " pp";
+
+    html += `
+      <tr>
+        <td><b>${month}</b></td>
+        <td>${Number(row[3]).toLocaleString("en-IN")}</td>
+        <td>${Number(row[7]).toFixed(2)}%</td>
+        <td>${change(row[7], previous ? previous[7] : null)}</td>
+        <td>${Number(row[8]).toFixed(2)}%</td>
+        <td>${change(row[8], previous ? previous[8] : null)}</td>
+        <td>${Number(row[9]).toFixed(2)}%</td>
+        <td>${change(row[9], previous ? previous[9] : null)}</td>
+      </tr>
+    `;
+
+    previous = row;
+  });
+
+  if (!found) {
+    html += '<tr><td colspan="8">No data found for this Taluka.</td></tr>';
+  }
+
+  html += "</tbody>";
+  table.innerHTML = html;
+}
+
   function makePerformanceChart(elementId, rows, valueIndex) {
   const container = document.getElementById(elementId);
   if (!container) return;
@@ -570,8 +690,9 @@ renderPendingAnalysis();
 renderPerformanceCharts();
 renderComparison();
   renderMonthlyComparison();
+  renderTalukaMonthlyOptions();
   renderMonthlyGraphs();
-document.getElementById("completionChart").innerHTML =
+  document.getElementById("completionChart").innerHTML =
   "JAVASCRIPT TEST SUCCESSFUL";
 </script>
 </body>
