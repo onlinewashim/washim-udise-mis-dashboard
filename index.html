@@ -62,9 +62,7 @@ tr.total{background:#dbeafe;font-weight:bold}
 </div>
 <div class="panel">
   <h4>Completion %</h4>
-  <div id="completionChart">
-  <p>Chart Test - Washim</p>
-</div>
+ <div id="completionChart"></div>
   <h4>APAAR %</h4>
   <div id="apaarChart"></div>
 
@@ -73,36 +71,36 @@ tr.total{background:#dbeafe;font-weight:bold}
 </div>
 
 <script>
+  <script>
 function renderPerformanceCharts() {
   const select = document.getElementById("performanceTalukaSelect");
-  if (!select) return;
+  if (!select || !data || !data.length) return;
 
   const allRows = data.filter(r =>
     String(r[0]).toUpperCase() !== "DISTRICT"
   );
 
-  // Taluka dropdown ko automatically fill karein
-  const selectedTaluka = select.value;
+  // Dropdown options sirf ek baar fill honge
+  if (select.options.length <= 1) {
+    allRows.forEach(r => {
+      const option = document.createElement("option");
+      option.value = r[0];
+      option.textContent = r[0];
+      select.appendChild(option);
+    });
+  }
 
-  select.innerHTML =
-    '<option value="">All Talukas</option>' +
-    allRows.map(r =>
-      `<option value="${r[0]}">${r[0]}</option>`
-    ).join("");
-
-  select.value = selectedTaluka;
-
-  // Selected Taluka ke hisab se data filter karein
   const taluka = select.value;
 
   const rows = taluka
-    ? allRows.filter(r => r[0] === taluka)
+    ? allRows.filter(r => String(r[0]) === taluka)
     : allRows;
 
-  // Sirf APAAR aur Aadhaar graphs update honge
+  // Sirf APAAR aur Aadhaar graph update honge
   makePerformanceChart("apaarChart", rows, 8);
   makePerformanceChart("aadhaarChart", rows, 9);
 }
+</script>
 </script>
 <h3 class="section-title">🏆 District Taluka Comparison</h3>
 
