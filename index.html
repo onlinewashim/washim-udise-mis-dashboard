@@ -74,11 +74,32 @@ tr.total{background:#dbeafe;font-weight:bold}
 
 <script>
 function renderPerformanceCharts() {
-  const rows = data.filter(r =>
+  const select = document.getElementById("performanceTalukaSelect");
+  if (!select) return;
+
+  const allRows = data.filter(r =>
     String(r[0]).toUpperCase() !== "DISTRICT"
   );
 
-  makePerformanceChart("completionChart", rows, 7);
+  // Taluka dropdown ko automatically fill karein
+  const selectedTaluka = select.value;
+
+  select.innerHTML =
+    '<option value="">All Talukas</option>' +
+    allRows.map(r =>
+      `<option value="${r[0]}">${r[0]}</option>`
+    ).join("");
+
+  select.value = selectedTaluka;
+
+  // Selected Taluka ke hisab se data filter karein
+  const taluka = select.value;
+
+  const rows = taluka
+    ? allRows.filter(r => r[0] === taluka)
+    : allRows;
+
+  // Sirf APAAR aur Aadhaar graphs update honge
   makePerformanceChart("apaarChart", rows, 8);
   makePerformanceChart("aadhaarChart", rows, 9);
 }
