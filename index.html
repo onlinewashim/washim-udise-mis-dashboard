@@ -473,6 +473,7 @@ function saveMonthlySnapshot() {
     "Monthly report saved successfully for " + month;
 
   renderMonthlyComparison();
+  renderMonthlyGraphs();
 }
 
 function renderMonthlyComparison() {
@@ -569,6 +570,7 @@ renderPendingAnalysis();
 renderPerformanceCharts();
 renderComparison();
   renderMonthlyComparison();
+  renderMonthlyGraphs();
 document.getElementById("completionChart").innerHTML =
   "JAVASCRIPT TEST SUCCESSFUL";
 </script>
